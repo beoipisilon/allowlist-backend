@@ -1,11 +1,26 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, NestModule, Module } from '@nestjs/common';
 import { DatabaseModule } from './database/database.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { AuthModule } from './modules/auth/auth.module';
+import { AllowlistsModule } from './modules/allowlists/allowlists.module';
+import { ConfigModule } from '@nestjs/config';
+import { DashboardModule } from './modules/dashboard/dashboard.module';
+import { LoggingMiddleware } from './common/middlewares/logging.middleware';
+import { TokensModule } from './modules/tokens/tokens.module';
+import { UsersModule } from './modules/users/users.module';
 
 @Module({
-  imports: [DatabaseModule],
+  imports: [DatabaseModule, DashboardModule, AuthModule, AllowlistsModule, TokensModule, UsersModule, ConfigModule.forRoot({
+    isGlobal: true,
+  })],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(LoggingMiddleware)
+      .forRoutes('*'); 
+  }
+}
