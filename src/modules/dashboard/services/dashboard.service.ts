@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Allowlist } from '../../allowlists/entities/allowlists.entity';
 import { Action } from '../../actions/entities/actions.entity';
-import { UptimeService } from '../../api-status/services/api-status.service';
+import { UptimeService } from '../../uptime/services/uptime.service';
 import * as moment from 'moment';
 
 @Injectable()
@@ -65,8 +65,8 @@ export class DashboardService {
                 recentActivity: formattedRecentActivity,
                 status: {
                     bot: 'Online',
-                    api: uptimeStatus.status === 'up' ? 'Online' : 'Offline',
-                    responseTime: uptimeStatus.responseTime, // Tempo de resposta em ms
+                    api: uptimeStatus.responseTime,
+                    uptime: uptimeStatus.uptime,
                 },
                 statsChanges: {
                     pending: {

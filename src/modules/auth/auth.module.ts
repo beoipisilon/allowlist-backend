@@ -8,29 +8,30 @@ import { SessionSerializer } from './strategies/session.serializer';
 import { DiscordAuthGuard } from './guards/auth.guard';
 import { AdminGuard } from './guards/admin.guard';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UsersDashboard } from '../users/entities/users.entity';
 import { UsersModule } from '../users/users.module';
+import { DiscordService } from '../discord/services/discord.service';
+import { StaffGuard } from './guards/staff.guard';
 
 @Module({
   imports: [
     ConfigModule,
     PassportModule.register({ session: true }),
-    TypeOrmModule.forFeature([UsersDashboard]),
-    forwardRef(() => UsersModule),  // Resolve a dependência circular
+    forwardRef(() => UsersModule),
   ],
   providers: [
     AuthService,
     DiscordStrategy,
     SessionSerializer,
     DiscordAuthGuard,
+    DiscordService,
     AdminGuard,
+    StaffGuard,
   ],
   exports: [
     AuthService,
     DiscordAuthGuard,
     AdminGuard,
-  //  UsersService,  // Não é necessário adicionar aqui, pois já é exportado de UsersModule
-    TypeOrmModule.forFeature([UsersDashboard]),
+    StaffGuard,
   ],
   controllers: [AuthController],
 })

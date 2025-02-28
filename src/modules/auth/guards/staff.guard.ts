@@ -3,7 +3,7 @@ import { Reflector } from '@nestjs/core';
 import { DiscordAuthGuard } from './auth.guard';
 
 @Injectable()
-export class AdminGuard implements CanActivate {
+export class StaffGuard implements CanActivate {
     constructor(private readonly reflector: Reflector, private readonly discordAuthGuard: DiscordAuthGuard) {}
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -12,6 +12,6 @@ export class AdminGuard implements CanActivate {
 
         const request = context.switchToHttp().getRequest();
         const session = request.session;
-        return session && session.user && session.user.permission === 'administrador';
+        return session && session.user && (session.user.permission === 'moderador' || session.user.permission === 'administrador');
     }
 }
