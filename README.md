@@ -41,3 +41,5 @@ MYSQL_DATABASE=database
 
 # Frontend URL for Cross-Origin Resource Sharing (CORS)
 FRONTEND_URL=http://localhost:8080
+
+[Click here to watch the video](https://youtu.be/AqdZvwm-eZ0)
