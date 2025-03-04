@@ -2,6 +2,8 @@
 
 This repository contains the back-end for **Allowlist Manager**, a platform designed for managing allowlists. The back-end is built with **NestJS** and **MySQL** to ensure scalability, efficiency, and a secure, organized data flow.
 
+[Click here to watch the video](https://youtu.be/AqdZvwm-eZ0)
+
 ## **Features**
 
 - **Manage Whitelists:** View, add, and remove allowlists.
@@ -41,5 +43,3 @@ MYSQL_DATABASE=database
 
 # Frontend URL for Cross-Origin Resource Sharing (CORS)
 FRONTEND_URL=http://localhost:8080
-
-[Click here to watch the video](https://youtu.be/AqdZvwm-eZ0)
