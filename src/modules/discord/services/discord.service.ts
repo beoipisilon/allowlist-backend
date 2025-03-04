@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { Client, GatewayIntentBits } from 'discord.js';
+import { Client, GatewayIntentBits, TextChannel } from 'discord.js';
+import { EmbedBuilder } from '@discordjs/builders';
 
 @Injectable()
 export class DiscordService {
@@ -98,5 +99,13 @@ export class DiscordService {
             console.error('Erro ao buscar membros do Discord:', error);
             return [];
         }
+    }
+
+    async sendMessage(channelId: string, embed: EmbedBuilder) {
+        const channel = this.client.channels.cache.get(channelId);
+        if (!channel) {
+            throw new Error('Channel not found');
+        }
+        await (channel as TextChannel).send({ embeds: [embed] });
     }
 }

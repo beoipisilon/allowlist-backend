@@ -9,9 +9,10 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { LoggingMiddleware } from './common/middlewares/logging.middleware';
 import { TokensModule } from './modules/tokens/tokens.module';
 import { UsersModule } from './modules/users/users.module';
+import { TicketsModule } from './modules/tickets/tickets.module';
 
 @Module({
-  imports: [DatabaseModule, DashboardModule, AuthModule, AllowlistsModule, TokensModule, UsersModule, ConfigModule.forRoot({
+  imports: [DatabaseModule, DashboardModule, AuthModule, AllowlistsModule, TokensModule, UsersModule, TicketsModule, ConfigModule.forRoot({
     isGlobal: true,
   })],
   controllers: [AppController],
