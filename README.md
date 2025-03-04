@@ -16,18 +16,28 @@ This repository contains the back-end for **Allowlist Manager**, a platform desi
 - **MySQL:** Relational database used to store platform data.
 - **Passport.js:** Middleware for authentication.
 
-## Configure Environment Variables
+## **Configure Environment Variables**
 
+Create a `.env` file in the root of the project and configure the following environment variables:
+
+```env
+# Discord Configuration
 DISCORD_BOT_TOKEN=""
-DISCORD_GUILD_ID=
-DISCORD_ROLE_APPROVED_ID=
-DISCORD_CLIENT_ID=
-DISCORD_CLIENT_SECRET=
-DISCORD_REDIRECT_URI=
-SESSION_SECRET=SECRET
+DISCORD_GUILD_ID=""
+DISCORD_ROLE_APPROVED_ID=""
+DISCORD_CLIENT_ID=""
+DISCORD_CLIENT_SECRET=""
+DISCORD_REDIRECT_URI=""
+
+# Session Configuration
+SESSION_SECRET="SECRET"
+
+# MySQL Database Configuration
 MYSQL_HOST=localhost
 MYSQL_PORT=3306
 MYSQL_USER=root
 MYSQL_PASSWORD=password
 MYSQL_DATABASE=database
+
+# Frontend URL for Cross-Origin Resource Sharing (CORS)
 FRONTEND_URL=http://localhost:8080
