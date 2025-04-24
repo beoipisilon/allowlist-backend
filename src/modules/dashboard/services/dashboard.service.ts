@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Allowlist } from '../../allowlists/entities/allowlists.entity';
-import { Action } from '../../actions/entities/actions.entity';
+import { AuditLog } from '../../audit/entities/audit-log.entity';
 import { UptimeService } from '../../uptime/services/uptime.service';
 import * as moment from 'moment';
 
@@ -13,8 +13,8 @@ export class DashboardService {
     constructor(
         @InjectRepository(Allowlist)
         private readonly allowlistRepository: Repository<Allowlist>,
-        @InjectRepository(Action)
-        private readonly actionRepository: Repository<Action>,
+        @InjectRepository(AuditLog)
+        private readonly auditLogRepository: Repository<AuditLog>,
         private readonly uptimeService: UptimeService,
     ) {}
 
@@ -45,16 +45,16 @@ export class DashboardService {
             const weekApproved = countChanges('approved', lastWeek);
             const weekRejected = countChanges('rejected', lastWeek);
 
-            // Formata as atividades recentes
-            const recentActivity = await this.actionRepository.find({
+            // Get recent activities from audit logs
+            const recentActivity = await this.auditLogRepository.find({
                 order: { createdAt: 'DESC' },
                 take: 3,
             });
 
             const formattedRecentActivity = recentActivity.map((item) => ({
-                user: item.user,
-                action: item.action,
-                target: item.target,
+                user: item.username,
+                action: item.actionType,
+                target: item.resourceType || 'Sistema',
                 time: this.formatTimeDifference(item.createdAt),
             }));
 

@@ -3,5 +3,5 @@ export interface UsersDashboard {
     discordId: string;
     username: string;
     avatarUrl: string | null;
-    permission: 'administrador' | 'moderador';
+    permission: 'administrador' | 'moderador' | 'suporte' | 'user';
 }

@@ -4,6 +4,7 @@ export class CreateTokenDto {
     uses: number;
     maxUses: number;
     discordId: string;
+    discordRole: string;
     usedBy?: string;
     expiresAt: Date;
 }

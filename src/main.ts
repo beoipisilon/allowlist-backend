@@ -4,9 +4,15 @@ import * as session from 'express-session';
 import * as passport from 'passport';
 import { ConfigService } from '@nestjs/config';
 import { LoggingMiddleware } from './common/middlewares/logging.middleware';
+import { createDatabase } from './database/create-database';
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
+
+  // Cria o banco de dados se não existir
+  await createDatabase(configService);
+
   app.use(new LoggingMiddleware().use);
 
   // Configuração da sessão
@@ -25,9 +31,8 @@ async function bootstrap() {
 
   // Configuração do CORS
   app.enableCors({
-    origin: configService.get('FRONTEND_URL') || 'http://localhost:8080', // Front-end
+    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   });
 
   // Inicialização do Passport

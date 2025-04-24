@@ -8,14 +8,8 @@ export class Allowlist {
     @Column()
     userId: string;
 
-    @Column()
-    question1: string;
-
-    @Column()
-    question2: string;
-
-    @Column()
-    question3: string;
+    @Column('json')
+    answers: Record<string, string>;
 
     @Column({ default: 'pending' })
     status: string;

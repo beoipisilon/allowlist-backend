@@ -5,14 +5,15 @@ import { Repository } from 'typeorm';
 import { Tokens } from '../entities/tokens.entity';
 import { CreateTokenDto } from '../dto/create-token.dto';
 import { Request } from 'express';
-import { ActionsService } from '../../actions/services/actions.service';
+import { AuditService } from '../../audit/services/audit.service';
+import { AuditActionType } from '../../audit/entities/audit-log.entity';
 
 @Injectable()
 export class TokensService {
     constructor(
         @InjectRepository(Tokens)
         private tokensRepository: Repository<Tokens>,
-        private readonly actionsService: ActionsService,
+        private readonly auditService: AuditService,
     ) {}
 
     async getAll() {
@@ -32,6 +33,8 @@ export class TokensService {
     }
 
     async create(createTokenDto: CreateTokenDto, req: Request) {
+        console.log(createTokenDto,'linha 36')
+        
         const token = await this.tokensRepository.findOne({ where: { token: createTokenDto.token.toLowerCase() } });
         if (token) {
             throw new BadRequestException('Token já existe');
@@ -40,11 +43,19 @@ export class TokensService {
         createTokenDto.expiresAt = new Date(createTokenDto.expiresAt);
         
         const loggedUserName = req.session.user?.username;
-        await this.actionsService.logAction(
-            'criou',
-            'o código ' + createTokenDto.token,
+        const userId = req.session.user?.id;
+        const userAvatar = req.session.user?.avatar;
+
+        // Log na tabela de auditoria
+        await this.auditService.logCreate(
+            userId,
             loggedUserName,
+            userAvatar,
+            'token',
+            createTokenDto.token,
+            `Criou o código ${createTokenDto.token}`
         );
+
         return this.tokensRepository.save(createTokenDto);
     }
 
@@ -53,13 +64,22 @@ export class TokensService {
         if (!token) {
             throw new NotFoundException('Token not found');
         }
-        await this.tokensRepository.delete(id);
+
         const loggedUserName = req.session.user?.username;
-        await this.actionsService.logAction(
-            'deletou',
-            'o código ' + token.token,
+        const userId = req.session.user?.id;
+        const userAvatar = req.session.user?.avatar;
+
+        // Log na tabela de auditoria
+        await this.auditService.logDelete(
+            userId,
             loggedUserName,
+            userAvatar,
+            'token',
+            token.token,
+            `Deletou o código ${token.token}`
         );
+
+        await this.tokensRepository.delete(id);
         return { message: 'Código deletado com sucesso!' };
     }
 }

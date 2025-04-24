@@ -21,6 +21,9 @@ export class Tokens {
     discordId: string;
 
     @Column()
+    discordRole: string;
+
+    @Column()
     usedBy: string;
 
     @Column({ default: () => 'CURRENT_TIMESTAMP + INTERVAL 1 DAY' })

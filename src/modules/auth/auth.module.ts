@@ -11,12 +11,19 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from '../users/users.module';
 import { DiscordService } from '../discord/services/discord.service';
 import { StaffGuard } from './guards/staff.guard';
+import { PermissionsModule } from '../permissions/permissions.module';
+import { BotSettingsModule } from '../bot-settings/bot-settings.module';
+import { SessionService } from './services/session.service';
+import { Session } from './entities/session.entity';
 
 @Module({
   imports: [
     ConfigModule,
     PassportModule.register({ session: true }),
     forwardRef(() => UsersModule),
+    forwardRef(() => PermissionsModule),
+    forwardRef(() => BotSettingsModule),
+    TypeOrmModule.forFeature([Session]),
   ],
   providers: [
     AuthService,
@@ -26,6 +33,7 @@ import { StaffGuard } from './guards/staff.guard';
     DiscordService,
     AdminGuard,
     StaffGuard,
+    SessionService,
   ],
   exports: [
     AuthService,

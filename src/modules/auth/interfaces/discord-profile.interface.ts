@@ -3,4 +3,5 @@ export interface DiscordProfile {
     username: string;
     avatar: string;
     permission?: string;
+    permissions?: Record<string, boolean>;
 }

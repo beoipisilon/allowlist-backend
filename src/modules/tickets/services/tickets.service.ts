@@ -4,7 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { MoreThan, Repository } from 'typeorm';
 import { Ticket } from '../entities/tickets.entity';
 import { DiscordService } from '../../discord/services/discord.service';
-import { ActionsService } from '../../actions/services/actions.service';
+import { AuditService } from '../../audit/services/audit.service';
 import { Request } from 'express';
 import { GenerateUnlockCodeDto } from '../dto/generate-unlock-code.dto';
 import { EmbedBuilder } from '@discordjs/builders';
@@ -16,7 +16,7 @@ export class TicketsService {
         @InjectRepository(Ticket)
         private ticketsRepository: Repository<Ticket>,
         private readonly discordService: DiscordService,
-        private readonly actionsService: ActionsService,
+        private readonly auditService: AuditService,
         private readonly tokensService: TokensService,
     ) {}
 
@@ -57,14 +57,28 @@ export class TicketsService {
             expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 2),
             maxUses: 1,
             type: 'unlock-code',
+            discordRole: '123',
             uses: 0,
             discordId: ticket.discordId,
         }, req);
 
+        // Log audit
+        if (req.session?.user) {
+            await this.auditService.logCreate(
+                req.session.user.id,
+                req.session.user.username,
+                req.session.user.avatar,
+                'ticket',
+                ticket.id.toString(),
+                `Gerou código de desbloqueio para o ticket #${ticket.id}`,
+                JSON.stringify({ token: token.toUpperCase() })
+            );
+        }
+
         const embed = new EmbedBuilder()
             .setColor([255, 207, 90])
             .setTitle('Código de desbloqueio')
-            .setDescription(`> **Gerado por:**\n${req.session.user?.username}\n\n> **Código:**\n||${token}||\n\n_Este código expirará em 2 dias_`);
+            .setDescription(`> **Gerado por:**\n${req.session.user?.username}\n\n> **Código:**\n||${token.toUpperCase()}||\n\n_Este código expirará em 2 dias_`);
         await this.discordService.sendMessage(ticket.channelId, embed);
         return token;
     }

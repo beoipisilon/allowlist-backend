@@ -3,10 +3,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Tokens } from './entities/tokens.entity';
 import { TokensService } from './services/tokens.service';
 import { TokensController } from './controllers/tokens.controller';
-import { ActionsModule } from '../actions/actions.module';
+import { AuditModule } from '../audit/audit.module';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Tokens]), ActionsModule],
+    imports: [TypeOrmModule.forFeature([Tokens]), AuditModule],
     controllers: [TokensController],
     providers: [TokensService],
     exports: [TokensService],

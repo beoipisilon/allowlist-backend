@@ -1,17 +1,21 @@
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { DiscordAuthGuard } from './auth.guard';
 
 @Injectable()
 export class AdminGuard implements CanActivate {
-    constructor(private readonly reflector: Reflector, private readonly discordAuthGuard: DiscordAuthGuard) {}
+    constructor(private readonly reflector: Reflector) {}
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
-        const isAuthenticated = await this.discordAuthGuard.canActivate(context);
-        if (!isAuthenticated) return false;
-
         const request = context.switchToHttp().getRequest();
         const session = request.session;
-        return session && session.user && session.user.permission === 'administrador';
+        
+       // console.log('AdminGuard - Session:', session);
+        //console.log('AdminGuard - User:', session?.user);
+        console.log('AdminGuard - User Permission:', session?.user?.permission);
+        
+        const isAdmin = session && session.user && session.user.permission === 'administrador';
+        console.log('AdminGuard - Is Admin:', isAdmin);
+        
+        return isAdmin;
     }
 }

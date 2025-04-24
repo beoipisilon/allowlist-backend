@@ -10,11 +10,30 @@ export class DiscordService {
         this.client = new Client({
             intents: [
                 GatewayIntentBits.Guilds,
-                GatewayIntentBits.GuildMembers
+                GatewayIntentBits.GuildMembers,
+                GatewayIntentBits.GuildPresences
             ],
         });
 
         this.client.login(process.env.DISCORD_BOT_TOKEN); 
+    }
+
+    async getBotInfo() {
+        const bot = this.client.user;
+        if (!bot) {
+            throw new Error('Bot not initialized');
+        }
+
+        return {
+            name: bot.username,
+            avatar: bot.displayAvatarURL({ size: 256 }),
+            status: bot.presence?.status || 'offline',
+            activity: bot.presence?.activities[0] ? {
+                type: bot.presence.activities[0].type.toString(),
+                name: bot.presence.activities[0].name,
+            } : null,
+            description: bot.tag || '',
+        };
     }
 
     async getUsername(discordId: string): Promise<string> {
@@ -54,6 +73,33 @@ export class DiscordService {
         }
         
         await member.roles.add(role);
+    }
+
+    async removeRole(discordId: string, guildId: string, roleId: string): Promise<void> {
+        const guild = this.client.guilds.cache.get(guildId);
+        if (!guild) {
+            throw new Error('Guild not found');
+        }
+        
+        const member = await guild.members.fetch(discordId);
+        if (!member) {
+            throw new Error('Member not found');
+        }
+        
+        const role = guild.roles.cache.get(roleId);
+        if (!role) {
+            throw new Error('Role not found');
+        }
+        
+        await member.roles.remove(role);
+    }
+
+    async sendText(channelId: string, message: string) {
+        const channel = this.client.channels.cache.get(channelId);
+        if (!channel) {
+            throw new Error('Channel not found');
+        }
+        await (channel as TextChannel).send({ content: message });
     }
 
     async getUserRoles(discordId: string, guildId: string): Promise<string[]> {
